@@ -118,7 +118,7 @@ void CEnemy::Update(double dt)
 {
 	Vector3 viewVector = (target - position).Normalized();
 	position += viewVector * (float)m_dSpeed * (float)dt;
-	cout << position << "..." /*<< viewVector*/ <<endl;
+	//cout << position << "..." /*<< viewVector*/ <<endl;
 
 	//Constrain the position
 	Constrain();
