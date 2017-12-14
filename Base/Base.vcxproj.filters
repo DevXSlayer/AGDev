@@ -34,6 +34,9 @@
     <Filter Include="Enemy">
       <UniqueIdentifier>{93f47b37-795c-41ee-9523-7367d5484396}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Spatial Parition">
+      <UniqueIdentifier>{288fd92b-2c79-4f80-a150-46bf221fa72a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -108,9 +111,6 @@
     <ClCompile Include="Source\Grenade.cpp">
       <Filter>Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SpatialPartition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="Source\Enemy\Enemy.cpp">
       <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpatialPartition.cpp">
+      <Filter>Spatial Parition</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,9 +194,6 @@
     <ClInclude Include="Source\Grenade.h">
       <Filter>Projectile</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SpatialPartition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -202,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="Source\Enemy\Enemy.h">
       <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpatialPartition.h">
+      <Filter>Spatial Parition</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

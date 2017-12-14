@@ -21,6 +21,7 @@ protected:
 	int xNumOfGrid;
 	int zNumOfGrid;
 	float yOffset;
+	bool isRender;
 	std::string _meshName; // Name of the mesh
 
 	// We story the pointer to the Camera so we can get it's position and direction to calculate LOD and visibility

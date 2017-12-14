@@ -4,6 +4,7 @@
 #include "GraphicsManager.h"
 #include "RenderHelper.h"
 #include "LevelOfDetails.h"
+#include "KeyboardController.h"
 
 template <typename T> vector<T> concat(vector<T> &a, vector<T> &b) {
 	vector<T> ret = vector<T>();
@@ -60,6 +61,7 @@ bool CSpatialPartition::Init(	const int xGridSize, const int zGridSize,
 		this->zSize = zGridSize * zNumOfGrid;
 		this->yOffset = yOffset;
 
+		isRender = false;
 		// Create an array of grids
 		theGrid = new CGrid[ xNumOfGrid*zNumOfGrid ];
 
@@ -116,33 +118,45 @@ Update the spatial partition
 ********************************************************************************/
 void CSpatialPartition::Update(void)
 {
-	for (int i = 0; i<xNumOfGrid; i++)
+	if (KeyboardController::GetInstance()->IsKeyPressed('L') && !isRender)
 	{
-		for (int j = 0; j<zNumOfGrid; j++)
-		{
-			theGrid[i*zNumOfGrid + j].Update(&MigrationList);
+		isRender = true;
+	}
+	else if (KeyboardController::GetInstance()->IsKeyPressed('L') && isRender)
+	{
+		isRender = false;
+	}
 
-			//check visibility
-			if (IsVisible(theCamera->GetCameraPos(), theCamera->GetCameraTarget() - theCamera->GetCameraPos(), i, j) == true)
+	if (isRender)
+	{
+		for (int i = 0; i < xNumOfGrid; i++)
+		{
+			for (int j = 0; j < zNumOfGrid; j++)
 			{
-				//Calculate LOD  for this CGgrid
-				float distance = CalculateDistanceSquare(&(theCamera->GetCameraPos()), i, j);
-				if (distance < LevelOfDetails_Distances[0])
+				theGrid[i*zNumOfGrid + j].Update(&MigrationList);
+
+				//check visibility
+				if (IsVisible(theCamera->GetCameraPos(), theCamera->GetCameraTarget() - theCamera->GetCameraPos(), i, j) == true)
 				{
-					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::HIGH_DETAILS);
-				}
-				else if (distance < LevelOfDetails_Distances[1])
-				{
-					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::MID_DETAILS);
+					//Calculate LOD  for this CGgrid
+					float distance = CalculateDistanceSquare(&(theCamera->GetCameraPos()), i, j);
+					if (distance < LevelOfDetails_Distances[0])
+					{
+						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::HIGH_DETAILS);
+					}
+					else if (distance < LevelOfDetails_Distances[1])
+					{
+						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::MID_DETAILS);
+					}
+					else
+					{
+						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::LOW_DETAILS);
+					}
+
 				}
 				else
-				{
-					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::LOW_DETAILS);
-				}
-
+					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::NO_DETAILS);
 			}
-			else
-				theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::NO_DETAILS);
 		}
 	}
 	 
@@ -165,27 +179,30 @@ Render the spatial partition
 ********************************************************************************/
 void CSpatialPartition::Render(Vector3* theCameraPosition)
 {
-	// Render the Spatial Partitions
-	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, yOffset, 0.0f);
-	for (int i = 0; i<xNumOfGrid; i++)
+	if (isRender)
 	{
-		for (int j = 0; j<zNumOfGrid; j++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(xGridSize*i - (xSize >> 1), 0.0f, zGridSize*j - (zSize >> 1));
-			modelStack.PushMatrix();
-			modelStack.Scale(xGridSize, 1.0f, zGridSize);
-			modelStack.Rotate(-90, 1, 0, 0);
-			theGrid[i*zNumOfGrid + j].Render();
-			modelStack.PopMatrix();
-			modelStack.PopMatrix();
-		}
-	}
+		// Render the Spatial Partitions
+		MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
 
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, yOffset, 0.0f);
+		for (int i = 0; i < xNumOfGrid; i++)
+		{
+			for (int j = 0; j < zNumOfGrid; j++)
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate(xGridSize*i - (xSize >> 1), 0.0f, zGridSize*j - (zSize >> 1));
+				modelStack.PushMatrix();
+				modelStack.Scale(xGridSize, 1.0f, zGridSize);
+				modelStack.Rotate(-90, 1, 0, 0);
+				theGrid[i*zNumOfGrid + j].Render();
+				modelStack.PopMatrix();
+				modelStack.PopMatrix();
+			}
+		}
+
+		modelStack.PopMatrix();
+	}
 }
 
 /********************************************************************************
