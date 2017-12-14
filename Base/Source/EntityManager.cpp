@@ -393,10 +393,16 @@ bool EntityManager::CheckForCollision(void)
 					if (CheckSphereCollision(thisEntity, thatEntity))
 					{
 						if (CheckAABBCollision(thisEntity, thatEntity))
+
 						{
+							cout << "HERE";
 							thisEntity->SetIsDone(true);
 							thatEntity->SetIsDone(true);
+
+							CSceneGraph::GetInstance()->DeleteNode((*colliderThis));
+							CSceneGraph::GetInstance()->DeleteNode((*colliderThat));
 						}
+
 					}
 				}
 			}
