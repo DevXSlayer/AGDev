@@ -248,7 +248,7 @@ bool EntityManager::CheckSphereCollision(EntityBase *ThisEntity, EntityBase *Tha
 	// greater than the distance squared between the 2 reference points of the 2 entities,
 	// then it could mean that they are colliding with each other.
 	if (DistanceSquaredBetween(thisMinAABB, thisMaxAABB) + DistanceSquaredBetween(thatMinAABB, thatMaxAABB) >
-		DistanceSquaredBetween(ThisEntity->GetPosition(), ThatEntity->GetPosition()) * 2.0)
+		DistanceSquaredBetween(ThisEntity->GetPosition(), ThatEntity->GetPosition()))
 	{
 		return true;
 	}

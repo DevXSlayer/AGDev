@@ -41,6 +41,13 @@ void GenericEntity::SetAABB(Vector3 maxAABB, Vector3 minAABB)
 	this->minAABB = minAABB;
 }
 
+void GenericEntity::SetPAABB(Vector3 size, Vector3 pos)
+{
+	position = pos;
+	this->maxAABB = size * (0.5, 0.5, 0.5) + pos;
+	this->minAABB = pos - size * (0.5, 0.5, 0.5);
+}
+
 GenericEntity* Create::Entity(	const std::string& _meshName, 
 								const Vector3& _position,
 								const Vector3& _scale)

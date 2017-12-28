@@ -123,6 +123,10 @@ void SceneText::Init()
 	GraphicsManager::GetInstance()->AttachCamera(&camera);
 
 	// Load all the meshes
+	MeshBuilder::GetInstance()->GenerateOBJ("Bullet", "OBJ//Bullet.obj");
+	MeshBuilder::GetInstance()->GetMesh("Bullet")->textureID = LoadTGA("Image//grass_darkgreen.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Box", "OBJ//box.obj");
+	MeshBuilder::GetInstance()->GetMesh("Box")->textureID = LoadTGA("Image//Color.tga");
 	MeshBuilder::GetInstance()->GenerateAxes("reference");
 	MeshBuilder::GetInstance()->GenerateCrossHair("crosshair");
 	MeshBuilder::GetInstance()->GenerateQuad("quad", Color(1, 1, 1), 1.f);
@@ -134,15 +138,16 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GetMesh("Chair")->textureID = LoadTGA("Image//chair.tga");
 	MeshBuilder::GetInstance()->GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
 	MeshBuilder::GetInstance()->GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
-	MeshBuilder::GetInstance()->GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 1.f);
+	MeshBuilder::GetInstance()->GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 0.5f);
+	MeshBuilder::GetInstance()->GenerateSphere("boom", Color(1, 1, 1), 18, 36, 5.f);
 	MeshBuilder::GetInstance()->GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
 	MeshBuilder::GetInstance()->GenerateCube("cube", Color(1.0f, 1.0f, 0.0f), 1.0f);
 	MeshBuilder::GetInstance()->GetMesh("cone")->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	MeshBuilder::GetInstance()->GetMesh("cone")->material.kSpecular.Set(0.f, 0.f, 0.f);
 	MeshBuilder::GetInstance()->GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
-	MeshBuilder::GetInstance()->GetMesh("GRASS_DARKGREEN")->textureID = LoadTGA("Image//grass_darkgreen.tga");
+	MeshBuilder::GetInstance()->GetMesh("GRASS_DARKGREEN")->textureID = LoadTGA("Image//SpaceGround.tga");
 	MeshBuilder::GetInstance()->GenerateQuad("GEO_GRASS_LIGHTGREEN", Color(1, 1, 1), 1.f);
-	MeshBuilder::GetInstance()->GetMesh("GEO_GRASS_LIGHTGREEN")->textureID = LoadTGA("Image//grass_lightgreen.tga");
+	MeshBuilder::GetInstance()->GetMesh("GEO_GRASS_LIGHTGREEN")->textureID = LoadTGA("Image//SpaceGround.tga");
 	MeshBuilder::GetInstance()->GenerateCube("cubeSG", Color(1.0f, 0.64f, 0.0f), 1.0f);
 
 	MeshBuilder::GetInstance()->GenerateQuad("SKYBOX_FRONT", Color(1, 1, 1), 1.f);
@@ -152,13 +157,16 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GenerateQuad("SKYBOX_TOP", Color(1, 1, 1), 1.f);
 	MeshBuilder::GetInstance()->GenerateQuad("SKYBOX_BOTTOM", Color(1, 1, 1), 1.f);
 	MeshBuilder::GetInstance()->GenerateQuad("GRIDMESH", Color(1, 1, 1), 10.f);
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_FRONT")->textureID = LoadTGA("Image//SkyBox//skybox_front.tga");
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_BACK")->textureID = LoadTGA("Image//SkyBox//skybox_back.tga");
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_LEFT")->textureID = LoadTGA("Image//SkyBox//skybox_left.tga");
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_RIGHT")->textureID = LoadTGA("Image//SkyBox//skybox_right.tga");
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_TOP")->textureID = LoadTGA("Image//SkyBox//skybox_top.tga");
-	MeshBuilder::GetInstance()->GetMesh("SKYBOX_BOTTOM")->textureID = LoadTGA("Image//SkyBox//skybox_bottom.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_FRONT")->textureID = LoadTGA("Image//SkyBox//starfield_ft.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_BACK")->textureID = LoadTGA("Image//SkyBox//starfield_bk.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_LEFT")->textureID = LoadTGA("Image//SkyBox//starfield_lf.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_RIGHT")->textureID = LoadTGA("Image//SkyBox//starfield_rt.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_TOP")->textureID = LoadTGA("Image//SkyBox//starfield_up.tga");
+	MeshBuilder::GetInstance()->GetMesh("SKYBOX_BOTTOM")->textureID = LoadTGA("Image//SkyBox//starfield_dn.tga");
 	MeshBuilder::GetInstance()->GenerateRay("laser", 10.0f);
+
+	MeshBuilder::GetInstance()->GenerateQuad("crosshair", Color(1, 1, 1), 5);
+	MeshBuilder::GetInstance()->GetMesh("crosshair")->textureID = LoadTGA("Image//crosshair.tga");
 
 	CSpatialPartition::GetInstance()->Init(100, 100, 10, 10);
 	CSpatialPartition::GetInstance()->SetMesh("GRIDMESH");
@@ -166,27 +174,61 @@ void SceneText::Init()
 	CSpatialPartition::GetInstance()->SetLevelOfDetails(5000.f, 10000.f);
 	EntityManager::GetInstance()->SetSpatialPartition(CSpatialPartition::GetInstance());
 
-
+	score = 0;
 	// Create entities into the scene
 	Create::Entity("reference", Vector3(0.0f, 0.0f, 0.0f)); // Reference
 	Create::Entity("lightball", Vector3(lights[0]->position.x, lights[0]->position.y, lights[0]->position.z)); // Lightball
 
-	GenericEntity* aCube = Create::Entity("cube", Vector3(-20.0f, 0.0f, -20.0f));
-	aCube->SetCollider(true);
-	aCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
-	aCube->InitLOD("cube", "cubeSG", "sphere");
+	//CUpdateTransformation* Rotate1 = new CUpdateTransformation();
+    head = Create::Entity("sphere", Vector3(-20.0f, 0.0f, -20.0f));
+	head->SetCollider(true);
+	head->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	head->InitLOD("sphere", "cubeSG", "cube");
 
 	// Add the pointer to this new entity to the Scene Graph
-	CSceneNode* theNode = CSceneGraph::GetInstance()->AddNode(aCube);
+	CSceneNode* theNode = CSceneGraph::GetInstance()->AddNode(head);
 	if (theNode == NULL)
 	{
 		cout << "EntityManager::AddEntity: Unable to add to scene graph!" << endl;
 	}
 
+	CUpdateTransformation* Rotate1 = new CUpdateTransformation();
 	GenericEntity* anotherCube = Create::Entity("cube", Vector3(-20.0f, 1.1f, -20.0f));
 	anotherCube->SetCollider(true);
 	anotherCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
 	CSceneNode* anotherNode = theNode->AddChild(anotherCube);
+	Rotate1->ApplyUpdate(1.0f, 0.0f, -1.0f, 0.0f);
+	Rotate1->SetSteps(-30, 30);
+	anotherNode->SetUpdateTransformation(Rotate1);
+
+	CUpdateTransformation* Rotate = new CUpdateTransformation();
+	GenericEntity* anotherCube2 = Create::Entity("cube", Vector3(-18.5f, 0.0f, -20.0f));
+	anotherCube2->SetCollider(true);
+	anotherCube2->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	CSceneNode* anotherNode2 = theNode->AddChild(anotherCube2);
+	Rotate->ApplyUpdate(1.0f, 0.0f, 1.0f, 0.0f);
+	Rotate->SetSteps(-30, 30);
+	anotherNode2->SetUpdateTransformation(Rotate);
+	 
+	CUpdateTransformation* Rotate2 = new CUpdateTransformation();
+	GenericEntity* anotherCube3 = Create::Entity("cube", Vector3(-21.5f, 0.0f, -20.0f));
+	anotherCube3->SetCollider(true);
+	anotherCube3->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	CSceneNode* thirdnode = theNode->AddChild(anotherCube3);
+	Rotate2->ApplyUpdate(1.0f, 1.0f, 0.0f, 0.0f);
+	Rotate2->SetSteps(-30, 30);
+	thirdnode->SetUpdateTransformation(Rotate2);
+
+
+	CUpdateTransformation* Rotate3 = new CUpdateTransformation();
+	GenericEntity* anotherCube4 = Create::Entity("cube", Vector3(-20.f, -1.1f, -20.0f));
+	anotherCube4->SetCollider(true);
+	anotherCube4->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	CSceneNode* fourthnode = theNode->AddChild(anotherCube4);
+	Rotate3->ApplyUpdate(1.0f, -1.0f, 0.0f, 0.0f);
+	Rotate3->SetSteps(-30, 30);
+	fourthnode->SetUpdateTransformation(Rotate3);
+
 	if (anotherNode == NULL)
 	{
 		cout << "EntityManager::AddEntity: Unable to add to scene graph!" << endl;
@@ -211,12 +253,11 @@ void SceneText::Init()
 	CUpdateTransformation* aRotateMtx = new CUpdateTransformation();
 	aRotateMtx->ApplyUpdate(1.0f, 0.0f, 0.0f, 1.0f);
 	aRotateMtx->SetSteps(-120, 60);
-	grandchildNode->SetUpdateTransformation(aRotateMtx);
+	//grandchildNode->SetUpdateTransformation(aRotateMtx);
 
 	//Create a CEnemy instance
 	theEnemy = new CEnemy();
 	theEnemy->Init();
-
 	groundEntity = Create::Ground("GRASS_DARKGREEN", "GEO_GRASS_LIGHTGREEN");
 //	Create::Text3DObject("text", Vector3(0.0f, 0.0f, 0.0f), "DM2210", Vector3(10.0f, 10.0f, 10.0f), Color(0, 1, 1));
 	Create::Sprite2DObject("crosshair", Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
@@ -225,13 +266,30 @@ void SceneText::Init()
 											 "SKYBOX_LEFT", "SKYBOX_RIGHT",
 											 "SKYBOX_TOP", "SKYBOX_BOTTOM");
 
+	thebox = Create::Entity("Box", Vector3(20.0f, -10.0f, -20.0f), Vector3(3, 3, 3));
+	thebox->SetCollider(true);
+	//thebox->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	 thebox->SetPAABB(Vector3(10, 100, 10), thebox->GetPosition());
+	things.push_back(thebox);
+
+
+
+     Boxie = Create::Entity("Box", Vector3(-30.f, -5.f, -20.0f));
+	 Boxie->SetCollider(true);
+	 Boxie->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+
+	// Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
+// Boom->SetCollider(true);
+//	 Boom->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	
+
 	// Customise the ground entity
 	groundEntity->SetPosition(Vector3(0, -10, 0));
 	groundEntity->SetScale(Vector3(100.0f, 100.0f, 100.0f));
 	groundEntity->SetGrids(Vector3(10.0f, 1.0f, 10.0f));
 	playerInfo->SetTerrain(groundEntity);
 	theEnemy->SetTerrain(groundEntity);
-
+	timer = 0;
 	// Setup the 2D entities
 	float halfWindowWidth = Application::GetInstance().GetWindowWidth() / 2.0f;
 	float halfWindowHeight = Application::GetInstance().GetWindowHeight() / 2.0f;
@@ -242,10 +300,82 @@ void SceneText::Init()
 		textObj[i] = Create::Text2DObject("text", Vector3(-halfWindowWidth, -halfWindowHeight + fontSize*i + halfFontSize, 0.0f), "", Vector3(fontSize, fontSize, fontSize), Color(0.0f,1.0f,0.0f));
 	}
 	textObj[0]->SetText("HELLO WORLD");
+
+	RenderMeshOnScreen(MeshBuilder::GetInstance()->GetMesh("crosshair"), 40, 30, 5, 5);
+
+	destroyed = true;
+}
+void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int sizey)
+{
+
+	if (!mesh) //Proper error check
+		return;
+
+	glDisable(GL_DEPTH_TEST);
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+	//to do: scale and translate accordingly
+	modelStack.Translate(x, y, 0);
+	modelStack.Scale(sizex, sizey, 1);
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void SceneText::Update(double dt)
 {
+	cout << timer;
+	if (Boxie->IsDone())
+	{
+		if (destroyed)
+		{
+			score = score + 1;
+			Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
+			destroyed = false;
+		}
+		if (!Boom->IsDone())
+		{
+			timer += dt;
+			if (timer > 0.5)
+			{
+				Boom->SetIsDone(true);
+				timer = 0;
+			}
+		}
+	}
+	else
+	{
+		 
+		cout << "BOX IS THERE" << endl;
+	}
+	 
+	if (head->IsDone())
+	{
+		if (destroyed)
+		{
+			score = score + 1;
+			Boom = Create::Entity("boom", Vector3(-20.f, -0.f, -20.0f));
+			destroyed = false;
+			score + 1;
+		}
+		if (!Boom->IsDone())
+		{
+			timer += dt;
+			if (timer > 0.5)
+			{
+				Boom->SetIsDone(true);
+				timer = 0;
+			}
+		}
+	}
+	 
 	// Update our entities
 	EntityManager::GetInstance()->Update(dt);
 
@@ -314,7 +444,8 @@ void SceneText::Update(double dt)
 
 	// Update the player position and other details based on keyboard and mouse inputs
 	playerInfo->Update(dt);
-
+	/*theKeyboard->Read(dt, things);
+	theMouse->Read(dt, things);*/
 	//camera.Update(dt); // Can put the camera into an entity rather than here (Then we don't have to write this)
 
 	GraphicsManager::GetInstance()->UpdateLights(dt);
@@ -324,13 +455,14 @@ void SceneText::Update(double dt)
 	std::ostringstream ss;
 	ss.precision(5);
 	float fps = (float)(1.f / dt);
-	ss << "FPS: " << fps;
+	ss << "FPS: " << fps <<  " " <<  "Score:" << score;
 	textObj[1]->SetText(ss.str());
 
 	std::ostringstream ss1;
 	ss1.precision(4);
 	ss1 << "Player:" << playerInfo->GetPos();
 	textObj[2]->SetText(ss1.str());
+
 }
 
 void SceneText::Render()
