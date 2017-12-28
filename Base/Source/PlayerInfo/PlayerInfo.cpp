@@ -286,6 +286,7 @@ void CPlayerInfo::Update(double dt)
 		if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		{
 			position += viewVector.Normalized() * (float)m_dSpeed * (float)dt;
+			//CheckForCollision();
 		}
 		else if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		{

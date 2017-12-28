@@ -30,17 +30,23 @@ public:
 
 private:
 	SceneText(SceneManager* _sceneMgr); // This is used to register to SceneManager
-
+	void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int sizey);
 	ShaderProgram* currProg;
 	CPlayerInfo* playerInfo;
 	GroundEntity* groundEntity;
 	FPSCamera camera;
 	TextEntity* textObj[3];
 	Light* lights[2];
-
+	MS modelStack, viewStack, projectionStack;
 	GenericEntity* theCube;
+	GenericEntity* thebox;
+	GenericEntity* Boxie;
+	GenericEntity* Boom;
 	CEnemy* theEnemy;
 	static SceneText* sInstance; // The pointer to the object that gets registered
+	float timer;
+	std::list<GenericEntity*> things;
+	std::list<GenericEntity*> boomboom;
 };
 
 #endif
