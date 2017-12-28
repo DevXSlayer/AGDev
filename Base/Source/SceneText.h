@@ -35,16 +35,19 @@ private:
 	CPlayerInfo* playerInfo;
 	GroundEntity* groundEntity;
 	FPSCamera camera;
-	TextEntity* textObj[3];
+	TextEntity* textObj[4];
 	Light* lights[2];
 	MS modelStack, viewStack, projectionStack;
 	GenericEntity* theCube;
 	GenericEntity* thebox;
 	GenericEntity* Boxie;
 	GenericEntity* Boom;
+	GenericEntity* head;
 	CEnemy* theEnemy;
 	static SceneText* sInstance; // The pointer to the object that gets registered
 	float timer;
+	float score;
+	bool destroyed;
 	std::list<GenericEntity*> things;
 	std::list<GenericEntity*> boomboom;
 };

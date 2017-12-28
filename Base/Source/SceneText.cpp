@@ -174,13 +174,13 @@ void SceneText::Init()
 	CSpatialPartition::GetInstance()->SetLevelOfDetails(5000.f, 10000.f);
 	EntityManager::GetInstance()->SetSpatialPartition(CSpatialPartition::GetInstance());
 
-
+	score = 0;
 	// Create entities into the scene
 	Create::Entity("reference", Vector3(0.0f, 0.0f, 0.0f)); // Reference
 	Create::Entity("lightball", Vector3(lights[0]->position.x, lights[0]->position.y, lights[0]->position.z)); // Lightball
 
 	//CUpdateTransformation* Rotate1 = new CUpdateTransformation();
-	GenericEntity* head = Create::Entity("sphere", Vector3(-20.0f, 0.0f, -20.0f));
+    head = Create::Entity("sphere", Vector3(-20.0f, 0.0f, -20.0f));
 	head->SetCollider(true);
 	head->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
 	head->InitLOD("sphere", "cubeSG", "cube");
@@ -302,6 +302,8 @@ void SceneText::Init()
 	textObj[0]->SetText("HELLO WORLD");
 
 	RenderMeshOnScreen(MeshBuilder::GetInstance()->GetMesh("crosshair"), 40, 30, 5, 5);
+
+	destroyed = true;
 }
 void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int sizey)
 {
@@ -330,17 +332,50 @@ void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int size
 void SceneText::Update(double dt)
 {
 	cout << timer;
-	if (!Boxie->IsDone())
+	if (Boxie->IsDone())
 	{
-		cout << "BOX IS THERE" << endl;
+		if (destroyed)
+		{
+			score = score + 1;
+			Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
+			destroyed = false;
+		}
+		if (!Boom->IsDone())
+		{
+			timer += dt;
+			if (timer > 0.5)
+			{
+				Boom->SetIsDone(true);
+				timer = 0;
+			}
+		}
 	}
 	else
 	{
-		Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
-		boomboom.push_back(Boom);
+		 
+		cout << "BOX IS THERE" << endl;
 	}
-
- 
+	 
+	if (head->IsDone())
+	{
+		if (destroyed)
+		{
+			score = score + 1;
+			Boom = Create::Entity("boom", Vector3(-20.f, -0.f, -20.0f));
+			destroyed = false;
+			score + 1;
+		}
+		if (!Boom->IsDone())
+		{
+			timer += dt;
+			if (timer > 0.5)
+			{
+				Boom->SetIsDone(true);
+				timer = 0;
+			}
+		}
+	}
+	 
 	// Update our entities
 	EntityManager::GetInstance()->Update(dt);
 
@@ -420,13 +455,14 @@ void SceneText::Update(double dt)
 	std::ostringstream ss;
 	ss.precision(5);
 	float fps = (float)(1.f / dt);
-	ss << "FPS: " << fps;
+	ss << "FPS: " << fps <<  " " <<  "Score:" << score;
 	textObj[1]->SetText(ss.str());
 
 	std::ostringstream ss1;
 	ss1.precision(4);
 	ss1 << "Player:" << playerInfo->GetPos();
 	textObj[2]->SetText(ss1.str());
+
 }
 
 void SceneText::Render()

@@ -26,6 +26,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_pTerrain(NULL)
 	, primaryWeapon(NULL)
 	, secondaryWeapon(NULL)
+	, tertiaryWeapon(NULL)
 {
 }
 
@@ -40,6 +41,11 @@ CPlayerInfo::~CPlayerInfo(void)
 	{
 		delete primaryWeapon;
 		primaryWeapon = NULL;
+	}
+	if (tertiaryWeapon)
+	{
+		delete tertiaryWeapon;
+		tertiaryWeapon = NULL;
 	}
 	m_pTerrain = NULL;
 }
@@ -64,6 +70,9 @@ void CPlayerInfo::Init(void)
 	// Set the pistol as the primary weapon
 	primaryWeapon = new CPistol();
 	primaryWeapon->Init();
+
+	tertiaryWeapon = new CLaserBlaster();
+	tertiaryWeapon->Init();
 	// Set the laser blaster as the secondary weapon
 	secondaryWeapon = new CGrenadeThrow();
 	secondaryWeapon->Init();
@@ -419,11 +428,17 @@ void CPlayerInfo::Update(double dt)
 			secondaryWeapon->Reload();
 			//secondaryWeapon->PrintSelf();
 		}
+		if (tertiaryWeapon)
+		{
+			tertiaryWeapon->Reload();
+		}
 	}
 	if (primaryWeapon)
 		primaryWeapon->Update(dt);
 	if (secondaryWeapon)
 		secondaryWeapon->Update(dt);
+	if (tertiaryWeapon)
+		tertiaryWeapon->Update(dt);
 
 	// if Mouse Buttons were activated, then act on them
 	if (MouseController::GetInstance()->IsButtonPressed(MouseController::LMB))
@@ -435,6 +450,12 @@ void CPlayerInfo::Update(double dt)
 	{
 		if (secondaryWeapon)
 			secondaryWeapon->Discharge(position, target, this);
+	}
+
+	else if (MouseController::GetInstance()->IsButtonPressed(MouseController::MMB))
+	{
+		if (tertiaryWeapon)
+			tertiaryWeapon->Discharge(position, target, this);
 	}
 
 	// If the user presses R key, then reset the view to default values
