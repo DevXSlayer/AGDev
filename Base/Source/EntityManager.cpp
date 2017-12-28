@@ -3,6 +3,7 @@
 #include "Collider/Collider.h"
 #include "Projectile/Laser.h"
 #include "SceneGraph\SceneGraph.h"
+#include "PlayerInfo\PlayerInfo.h"
 
 #include <iostream>
 using namespace std;
@@ -13,18 +14,29 @@ void EntityManager::Update(double _dt)
 	// Update all entities
 	std::list<EntityBase*>::iterator it, end;
 	end = entityList.end();
-	for (it = entityList.begin(); it != end; ++it)
+
+	vector<EntityBase*> ExportList = CSpatialPartition::GetInstance()->GetObjects(CPlayerInfo::GetInstance()->GetPos(), 1);	int num = 0;
+
+	//for (it = entityList.begin(); it != end; ++it)
+	//{
+	//	(*it)->Update(_dt);
+	//}
+
+	// only Update entities that are in the same grid as player
+	for (vector<EntityBase*>::iterator i = ExportList.begin(); i != ExportList.end(); ++i)
 	{
-		(*it)->Update(_dt);
+			(*i)->Update(_dt);
 	}
+
 
 	// Render the Scene Graph
 	CSceneGraph::GetInstance()->Update();
 
-
 	// Render the SpatialPartition
 	if (theSpatialPartition)
-		theSpatialPartition->Update();
+	{
+			theSpatialPartition->Update();
+	}
 	// Check for Collision amongst entities with collider properties
 	CheckForCollision();
 
@@ -32,11 +44,12 @@ void EntityManager::Update(double _dt)
 	it = entityList.begin();
 	while (it != end)
 	{
+
 		if ((*it)->IsDone())
 		{
 			// Delete if done
 			delete *it;
-			it = entityList.erase(it);
+			it = entityList.erase(it);			
 		}
 		else
 		{
@@ -323,6 +336,8 @@ bool EntityManager::CheckForCollision(void)
 	std::list<EntityBase*>::iterator colliderThis, colliderThisEnd;
 	std::list<EntityBase*>::iterator colliderThat, colliderThatEnd;
 
+	int counter = 0;
+
 	colliderThisEnd = entityList.end();
 	for (colliderThis = entityList.begin(); colliderThis != colliderThisEnd; ++colliderThis)
 	{
@@ -381,12 +396,12 @@ bool EntityManager::CheckForCollision(void)
 
 			// Check for collision with another collider class
 			colliderThatEnd = entityList.end();
-			int counter = 0;
 			for (colliderThat = entityList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
 			{
+
 				if (colliderThat == colliderThis)
 					continue;
-
+				counter++;
 				if ((*colliderThat)->HasCollider())
 				{
 					EntityBase *thatEntity = dynamic_cast<EntityBase*>(*colliderThat);
@@ -419,5 +434,6 @@ bool EntityManager::CheckForCollision(void)
 			}
 		}
 	}
+	cout << "counter: " << counter << endl;
 	return false;
 }

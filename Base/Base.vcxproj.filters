@@ -34,7 +34,7 @@
     <Filter Include="Enemy">
       <UniqueIdentifier>{93f47b37-795c-41ee-9523-7367d5484396}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Spatial Parition">
+    <Filter Include="Spatial Partition">
       <UniqueIdentifier>{288fd92b-2c79-4f80-a150-46bf221fa72a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -121,7 +121,7 @@
       <Filter>Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Source\SpatialPartition.cpp">
-      <Filter>Spatial Parition</Filter>
+      <Filter>Spatial Partition</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,7 +204,7 @@
       <Filter>Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Source\SpatialPartition.h">
-      <Filter>Spatial Parition</Filter>
+      <Filter>Spatial Partition</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

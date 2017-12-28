@@ -5,6 +5,7 @@
 #include "RenderHelper.h"
 #include "LevelOfDetails.h"
 #include "KeyboardController.h"
+#include "PlayerInfo\PlayerInfo.h"
 
 template <typename T> vector<T> concat(vector<T> &a, vector<T> &b) {
 	vector<T> ret = vector<T>();
@@ -30,7 +31,9 @@ CSpatialPartition::CSpatialPartition(void)
 	, zNumOfGrid(0)
 	, yOffset(0.0f)
 	, _meshName("")
-	,theCamera(NULL)
+	, theCamera(NULL)
+	, xPlayerPos(0)
+	, zPlayerPos(0)
 {
 }
 
@@ -60,7 +63,7 @@ bool CSpatialPartition::Init(	const int xGridSize, const int zGridSize,
 		this->xSize = xGridSize * xNumOfGrid;
 		this->zSize = zGridSize * zNumOfGrid;
 		this->yOffset = yOffset;
-
+		
 		isRender = false;
 		// Create an array of grids
 		theGrid = new CGrid[ xNumOfGrid*zNumOfGrid ];
@@ -118,6 +121,9 @@ Update the spatial partition
 ********************************************************************************/
 void CSpatialPartition::Update(void)
 {
+	xPlayerPos = static_cast<int>(CPlayerInfo::GetInstance()->GetPos().x / xGridSize);
+	zPlayerPos = static_cast<int>(CPlayerInfo::GetInstance()->GetPos().z / xGridSize);
+
 	if (KeyboardController::GetInstance()->IsKeyPressed('L') && !isRender)
 	{
 		isRender = true;
@@ -127,39 +133,47 @@ void CSpatialPartition::Update(void)
 		isRender = false;
 	}
 
-	if (isRender)
-	{
+
 		for (int i = 0; i < xNumOfGrid; i++)
 		{
 			for (int j = 0; j < zNumOfGrid; j++)
 			{
 				theGrid[i*zNumOfGrid + j].Update(&MigrationList);
 
-				//check visibility
-				if (IsVisible(theCamera->GetCameraPos(), theCamera->GetCameraTarget() - theCamera->GetCameraPos(), i, j) == true)
+				if (isRender)
 				{
-					//Calculate LOD  for this CGgrid
-					float distance = CalculateDistanceSquare(&(theCamera->GetCameraPos()), i, j);
-					if (distance < LevelOfDetails_Distances[0])
+					//check visibility
+					if (IsVisible(theCamera->GetCameraPos(), theCamera->GetCameraTarget() - theCamera->GetCameraPos(), i, j) == true)
 					{
-						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::HIGH_DETAILS);
-					}
-					else if (distance < LevelOfDetails_Distances[1])
-					{
-						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::MID_DETAILS);
-					}
-					else
-					{
-						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::LOW_DETAILS);
+						//Calculate LOD  for this CGgrid
+						float distance = CalculateDistanceSquare(&(theCamera->GetCameraPos()), i, j);
+						if (distance < LevelOfDetails_Distances[0])
+						{
+							theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::HIGH_DETAILS);
+						}
+						else if (distance < LevelOfDetails_Distances[1])
+						{
+							theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::MID_DETAILS);
+						}
+						else
+						{
+							theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::LOW_DETAILS);
+						}
 					}
 
+					else
+						theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::NO_DETAILS);
 				}
 				else
-					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::NO_DETAILS);
+				{
+							//theGrid[i*zNumOfGrid + j].Update(&MigrationList);
+					theGrid[i*zNumOfGrid + j].SetDetailLevel(CLevelOfDetails::HIGH_DETAILS);
+										
+				}
 			}
 		}
-	}
-	 
+	
+
 	 
 	// If there are objects due for migration, then process them
 	if (MigrationList.empty() == false)
@@ -175,7 +189,7 @@ void CSpatialPartition::Update(void)
 }
 
 /********************************************************************************
-Render the spatial partition
+Rwer the spatial partition
 ********************************************************************************/
 void CSpatialPartition::Render(Vector3* theCameraPosition)
 {
@@ -186,23 +200,36 @@ void CSpatialPartition::Render(Vector3* theCameraPosition)
 
 		modelStack.PushMatrix();
 		modelStack.Translate(0.0f, yOffset, 0.0f);
-		for (int i = 0; i < xNumOfGrid; i++)
-		{
-			for (int j = 0; j < zNumOfGrid; j++)
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate(xGridSize*i - (xSize >> 1), 0.0f, zGridSize*j - (zSize >> 1));
-				modelStack.PushMatrix();
-				modelStack.Scale(xGridSize, 1.0f, zGridSize);
-				modelStack.Rotate(-90, 1, 0, 0);
-				theGrid[i*zNumOfGrid + j].Render();
-				modelStack.PopMatrix();
-				modelStack.PopMatrix();
-			}
-		}
+		//for (int i = 0; i < xNumOfGrid; i++)
+		//{
+		//	for (int j = 0; j < zNumOfGrid; j++)
+		//	{
+		//		modelStack.PushMatrix();
+		//		modelStack.Translate(xGridSize*i - (xSize >> 1), 0.0f, zGridSize*j - (zSize >> 1));
+		//		modelStack.PushMatrix();
+		//		modelStack.Scale(xGridSize, 1.0f, zGridSize);
+		//		modelStack.Rotate(-90, 1, 0, 0);
+		//		//theGrid[xPlayerPos*zNumOfGrid + zPlayerPos].Render();
 
+		//		theGrid[i*zNumOfGrid + j].Render();
+		//		modelStack.PopMatrix();
+		//		modelStack.PopMatrix();
+		//	}
+		//}
+
+		//modelStack.PopMatrix();
+
+		
+		modelStack.PushMatrix();
+		modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x,0, CPlayerInfo::GetInstance()->GetPos().z);
+
+		modelStack.Scale(xNumOfGrid, 1.0f, zNumOfGrid);
+		modelStack.Rotate(-90, 1, 0, 0);
+		theGrid[2*zNumOfGrid + 0].Render();
+		modelStack.PopMatrix();
 		modelStack.PopMatrix();
 	}
+	
 }
 
 /********************************************************************************
@@ -287,7 +314,7 @@ void CSpatialPartition::Add(EntityBase* theObject)
 // Remove but not delete object from this grid
 void CSpatialPartition::Remove(EntityBase* theObject)
 {
-	/*
+	
 	// Get the indices of the object's position
 	int xIndex = (((int)theObject->GetPosition().x - (-xSize >> 1)) / (xSize / xNumOfGrid));
 	int zIndex = (((int)theObject->GetPosition().z - (-zSize >> 1)) / (zSize / zNumOfGrid));
@@ -297,7 +324,7 @@ void CSpatialPartition::Remove(EntityBase* theObject)
 	{
 		theGrid[xIndex*zNumOfGrid + zIndex].Remove(theObject);
 	}
-	*/
+	
 }
 
 /********************************************************************************
