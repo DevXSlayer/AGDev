@@ -22,6 +22,8 @@ protected:
 	int zNumOfGrid;
 	float yOffset;
 	bool isRender;
+	int xPlayerPos;
+	int zPlayerPos;
 	std::string _meshName; // Name of the mesh
 
 	// We story the pointer to the Camera so we can get it's position and direction to calculate LOD and visibility
@@ -75,6 +77,8 @@ public:
 	int GetxNumOfGrid(void) const;
 	// Get zNumOfGrid
 	int GetzNumOfGrid(void) const;
+	// Get isRender
+	bool getisRender(void)const { return isRender; };
 
 	// Get a particular grid
 	CGrid GetGrid(const int xIndex, const int zIndex) const;
@@ -99,6 +103,7 @@ public:
 	// Handling Camera
 	void SetCamera(FPSCamera* _cameraPtr);
 	void RemoveCamera(void);
+	
 
 	// Set LOD distances
 	void SetLevelOfDetails(const float distance_High2Mid, const float distance_Mid2Low);

@@ -6,6 +6,7 @@
 #include "RenderHelper.h"
 #include "GL\glew.h"
 #include "PlayerInfo\PlayerInfo.h"
+#include "SceneGraph\SceneGraph.h"
 
 CGrenade::CGrenade(void):
 CProjectile(NULL),
@@ -45,6 +46,16 @@ void CGrenade::Update(double dt)
 	{
 		SetStatus(false);
 		SetIsDone(true);
+
+		//check spartial partition
+		vector<EntityBase*> ExportList = CSpatialPartition::GetInstance()->GetObjects(position, 1.0f);
+		for (int i = 0; i < ExportList.size(); ++i)
+		{
+			if (CSceneGraph::GetInstance()->DeleteNode(ExportList[i]) == true)
+			{
+				cout << "REMOVED" << endl;
+			}
+		}
 		return;
 	}
 
@@ -53,7 +64,9 @@ void CGrenade::Update(double dt)
 	{
 		//Update position
 		m_fElapsedTime += dt;
-		position.Set(position.x + (float)(GetDirection().x * m_fSpeed * m_fElapsedTime), position.y + (float)(m_fSpeed *GetDirection().y) + (0.5 * m_fGravity * m_fElapsedTime *m_fElapsedTime), position.z + (float)(GetDirection().z * m_fSpeed * m_fElapsedTime));
+		position.Set(position.x + (float)(GetDirection().x * m_fSpeed * m_fElapsedTime), 
+					 position.y + (float)(m_fSpeed *GetDirection().y) + (0.5 * m_fGravity * m_fElapsedTime *m_fElapsedTime), 
+				     position.z + (float)(GetDirection().z * m_fSpeed * m_fElapsedTime));
 		if (position.y < m_pTerrain->GetTerrainHeight(position) - 10.f)
 		{
 			position.y = m_pTerrain->GetTerrainHeight(position) - 10.f;

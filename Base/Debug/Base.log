@@ -1,12 +1,19 @@
 ﻿  SceneText.cpp
 d:\new folder (5)\base\source\scenetext.cpp(325): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 d:\new folder (5)\base\source\scenetext.cpp(326): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\new folder (5)\base\source\scenetext.cpp(346): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\new folder (5)\base\source\scenetext.cpp(368): warning C4552: '+': operator has no effect; expected operator with side-effect
-d:\new folder (5)\base\source\scenetext.cpp(372): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\new folder (5)\base\source\scenetext.cpp(347): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\new folder (5)\base\source\scenetext.cpp(369): warning C4552: '+': operator has no effect; expected operator with side-effect
+d:\new folder (5)\base\source\scenetext.cpp(373): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
   Generating Code...
   Skipping... (no relevant changes detected)
-  Application.cpp
+  main.cpp
+  Pistol.cpp
+  UpdateTransformation.cpp
+  Transform.cpp
+  OBJMesh.cpp
+  Light.cpp
+  GrenadeThrow.cpp
+  FPSCamera.cpp
 Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Base.vcxproj -> D:\New folder (5)\Debug\Base.exe

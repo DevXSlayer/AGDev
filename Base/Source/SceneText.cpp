@@ -332,7 +332,7 @@ void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int size
 
 void SceneText::Update(double dt)
 {
-	if(playerInfo->SetPos)
+	 
 	cout << timer;
 	if (Boxie->IsDone())
 	{
