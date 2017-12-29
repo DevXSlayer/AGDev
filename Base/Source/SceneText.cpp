@@ -336,7 +336,7 @@ void SceneText::Update(double dt)
 	{
 		if (destroyed)
 		{
-			score = score + 1;
+
 			Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
 			destroyed = false;
 		}
@@ -347,20 +347,16 @@ void SceneText::Update(double dt)
 			{
 				Boom->SetIsDone(true);
 				timer = 0;
+				score = score + 1;
 			}
 		}
-	}
-	else
-	{
-		 
-		cout << "BOX IS THERE" << endl;
 	}
 	 
 	if (head->IsDone())
 	{
 		if (destroyed)
 		{
-			score = score + 1;
+
 			Boom = Create::Entity("boom", Vector3(-20.f, -0.f, -20.0f));
 			destroyed = false;
 			score + 1;
@@ -372,6 +368,7 @@ void SceneText::Update(double dt)
 			{
 				Boom->SetIsDone(true);
 				timer = 0;
+				score = score + 1;
 			}
 		}
 	}

@@ -158,7 +158,7 @@ CProjectile* Create::Projectile(const std::string& _meshName,
 	result->SetStatus(true);
 	result->SetCollider(true);
 	result->SetSource(_source);
-	EntityManager::GetInstance()->AddEntity(result);
+	EntityManager::GetInstance()->AddProjectile(result);
 
 	return result;
 }

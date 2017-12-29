@@ -1,30 +1,7 @@
-﻿  WeaponInfo.cpp
+﻿  GenericEntity.cpp
+c:\users\devxslayer\documents\agdev2\base\source\genericentity.cpp(47): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\devxslayer\documents\agdev2\base\source\genericentity.cpp(48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-Pistol.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Pistol.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-UpdateTransformation.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'UpdateTransformation.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-Transform.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Transform.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-OBJMesh.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'OBJMesh.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-main.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'main.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-Light.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Light.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-GrenadeThrow.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'GrenadeThrow.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-FPSCamera.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'FPSCamera.obj' or at 'C:\Users\DevXSlayer\Documents\AGDev2\Debug\vc140.pdb'; linking object as if no debug info
-Common.lib(CameraBase.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(Collider.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(EntityBase.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(GraphicsManager.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(KeyboardController.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(LightBase.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(LoadOBJ.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(LoadTGA.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(MatrixStack.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(Mesh.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(MeshBuilder.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(MouseController.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(Mtx44.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(SceneManager.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(ShaderProgram.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(timer.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
-Common.lib(Vector3.obj) : warning LNK4020: a type record in 'c:\users\devxslayer\documents\agdev2\debug\Common.pdb' is corrupted; some symbols and types may not be accessible from the debugger
   Base.vcxproj -> C:\Users\DevXSlayer\Documents\AGDev2\Debug\Base.exe
   Base.vcxproj -> C:\Users\DevXSlayer\Documents\AGDev2\Debug\Base.pdb (Full PDB)

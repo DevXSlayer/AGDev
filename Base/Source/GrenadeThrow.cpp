@@ -30,9 +30,6 @@ void CGrenadeThrow::Init(void)
 	elapsedTime = 3;
 	// Boolean flag to indicate if weapon can fire now
 	bFire = true;
-
-
-
 }
 
 void CGrenadeThrow::Discharge(Vector3 position, Vector3 target, CPlayerInfo * _source)

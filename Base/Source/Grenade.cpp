@@ -94,7 +94,7 @@ CGrenade* Create::Grenade(const std::string& _meshName, const Vector3& _position
 	result->SetCollider(true);
 	result->SetSource(_source);
 	result->SetTerrain(_source->GetTerrain());
-	EntityManager::GetInstance()->AddEntity(result);
+	EntityManager::GetInstance()->AddProjectile(result);
 	return result;
 }
 

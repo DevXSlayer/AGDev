@@ -12,22 +12,29 @@ using namespace std;
 void EntityManager::Update(double _dt)
 {
 	// Update all entities
-	std::list<EntityBase*>::iterator it, end;
+	std::list<EntityBase*>::iterator it, end,itProj,endProj;
 	end = entityList.end();
+	endProj = projectileList.end();
 
 	vector<EntityBase*> ExportList = CSpatialPartition::GetInstance()->GetObjects(CPlayerInfo::GetInstance()->GetPos(), 1);	int num = 0;
-
-	//for (it = entityList.begin(); it != end; ++it)
-	//{
-	//	(*it)->Update(_dt);
-	//}
-
-	// only Update entities that are in the same grid as player
-	for (vector<EntityBase*>::iterator i = ExportList.begin(); i != ExportList.end(); ++i)
+	vector<EntityBase*>::iterator ExportListIt,ExportListEnd;
+	ExportListEnd = ExportList.end();
+	if (!projectileList.empty())
 	{
-			(*i)->Update(_dt);
+		for (itProj = projectileList.begin(); itProj != endProj; ++itProj)
+		{
+			(*itProj)->Update(_dt);
+		}
 	}
 
+	int count = 0;
+	// only Update entities that are in the same grid as player
+	for (ExportListIt = ExportList.begin(); ExportListIt != ExportListEnd; ++ExportListIt)
+	{
+			(*ExportListIt)->Update(_dt);
+			count++;
+	}
+	std::cout << count << std::endl;
 
 	// Render the Scene Graph
 	CSceneGraph::GetInstance()->Update();
@@ -57,17 +64,41 @@ void EntityManager::Update(double _dt)
 			++it;
 		}
 	}
+
+	if (!projectileList.empty())
+	{
+		while (itProj != endProj)
+		{
+
+			if ((*itProj)->IsDone())
+			{
+				// Delete if done
+				delete *itProj;
+				itProj = entityList.erase(itProj);
+			}
+			else
+			{
+				// Move on otherwise
+				++itProj;
+			}
+		}
+	}
 }
 
 // Render all entities
 void EntityManager::Render()
 {
 	// Render all entities
-	std::list<EntityBase*>::iterator it, end;
+	std::list<EntityBase*>::iterator it, end,projIt,projEnd;
 	end = entityList.end();
+	projEnd = projectileList.end();
 	for (it = entityList.begin(); it != end; ++it)
 	{
 		(*it)->Render();
+	} 
+	for (projIt = projectileList.begin(); projIt != projEnd; ++projIt)
+	{
+		(*projIt)->Render();
 	}
 
 	// Render the Scene Graph
@@ -125,6 +156,44 @@ bool EntityManager::RemoveEntity(EntityBase* _existingEntity)
 		}
 
 		return true;	
+	}
+	// Return false if not found
+	return false;
+}
+
+void EntityManager::AddProjectile(EntityBase * _newEntity, bool b_AddToSpatialPartition)
+{
+	projectileList.push_back(_newEntity);
+
+	//add to the spatialpartition
+	if (theSpatialPartition && b_AddToSpatialPartition)
+		theSpatialPartition->Add(_newEntity);
+}
+
+bool EntityManager::RemoveProjectile(EntityBase * _existingEntity)
+{
+	// Find the entity's iterator
+	std::list<EntityBase*>::iterator findIter = std::find(projectileList.begin(), projectileList.end(), _existingEntity);
+
+	// Delete the entity if found
+	if (findIter != projectileList.end())
+	{
+		delete *findIter;
+		findIter = projectileList.erase(findIter);
+
+		// Remove from SceneNode too
+		if (CSceneGraph::GetInstance()->DeleteNode(_existingEntity) == false)
+		{
+			cout << "EntityManager::RemoveEntity: Unable to remove this entity from Scene Graph" << endl;
+		}
+		else
+		{
+			//remove the spatialpartition
+			if (theSpatialPartition)
+				theSpatialPartition->Remove(_existingEntity);
+		}
+
+		return true;
 	}
 	// Return false if not found
 	return false;
@@ -338,84 +407,118 @@ bool EntityManager::CheckForCollision(void)
 
 	int counter = 0;
 
-	colliderThisEnd = entityList.end();
-	for (colliderThis = entityList.begin(); colliderThis != colliderThisEnd; ++colliderThis)
+	if (!projectileList.empty())
 	{
-		// Check if this entity is a CLaser type
-		if ((*colliderThis)->GetIsLaser())
+		for (std::list<EntityBase*>::iterator projIT = projectileList.begin(); projIT != projectileList.end(); projIT++)
 		{
-			// Dynamic cast it to a CLaser class
-			CLaser* thisEntity = dynamic_cast<CLaser*>(*colliderThis);
-
-			// Check for collision with another collider class
-			colliderThatEnd = entityList.end();
-			int counter = 0;
-			for (colliderThat = entityList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
+			if ((*projIT)->GetIsLaser())
 			{
-				if (colliderThat == colliderThis)
-					continue;
+				EntityBase *projEntity = dynamic_cast<EntityBase*>(*projIT);
 
-				if ((*colliderThat)->HasCollider())
+				for (std::list<EntityBase*>::iterator entityIT = entityList.begin(); entityIT != entityList.end(); entityIT++)
 				{
-					Vector3 hitPosition = Vector3(0, 0, 0);
-
-					// Get the minAABB and maxAABB for (*colliderThat)
-					CCollider *thatCollider = dynamic_cast<CCollider*>(*colliderThat);
-					Vector3 thatMinAABB = (*colliderThat)->GetPosition() + thatCollider->GetMinAABB();
-					Vector3 thatMaxAABB = (*colliderThat)->GetPosition() + thatCollider->GetMaxAABB();
-
-					if (CheckLineSegmentPlane(	thisEntity->GetPosition(), 
-												thisEntity->GetPosition() - thisEntity->GetDirection() * thisEntity->GetLength(),
-												thatMinAABB, thatMaxAABB,
-												hitPosition) == true)
+					if ((*entityIT)->HasCollider())
 					{
-						(*colliderThis)->SetIsDone(true);
-						(*colliderThat)->SetIsDone(true);
+						EntityBase *itEntity = dynamic_cast<EntityBase*>(*entityIT);
 
-
-						// Remove from Scene Graph
-						if (CSceneGraph::GetInstance()->DeleteNode((*colliderThis)) == true)
+						if (CheckSphereCollision(projEntity, itEntity))
 						{
-							cout << "*** This Entity removed ***" << endl;
-						}
-						// Remove from Scene Graph
-						if (CSceneGraph::GetInstance()->DeleteNode((*colliderThat)) == true)
-						{
-							cout << "*** That Entity removed ***" << endl;
-						}
+							if (CheckAABBCollision(projEntity, itEntity))
+							{
+								cout << "HERE";
+								projEntity->SetIsDone(true);
+								itEntity->SetIsDone(true);
 
+								CSceneGraph::GetInstance()->DeleteNode((*entityIT));
+								CSceneGraph::GetInstance()->DeleteNode((*projIT));
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*entityIT)) == true)
+								{
+									cout << "*** This Entity removed ***" << endl;
+								}
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*projIT)) == true)
+								{
+									cout << "*** That Entity removed ***" << endl;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			else if ((*projIT)->HasCollider())
+			{
+				EntityBase *projEntity = dynamic_cast<EntityBase*>(*projIT);
+
+					for (std::list<EntityBase*>::iterator entityIT = entityList.begin(); entityIT != entityList.end(); entityIT++)
+					{
+						if ((*entityIT)->HasCollider())
+						{
+							EntityBase *itEntity = dynamic_cast<EntityBase*>(*entityIT);
+
+						if (CheckSphereCollision(projEntity, itEntity))
+						{
+							if (CheckAABBCollision(projEntity, itEntity))
+							{
+								cout << "HERE";
+								projEntity->SetIsDone(true);
+								itEntity->SetIsDone(true);
+
+								CSceneGraph::GetInstance()->DeleteNode((*entityIT));
+								CSceneGraph::GetInstance()->DeleteNode((*projIT));
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*entityIT)) == true)
+								{
+									cout << "*** This Entity removed ***" << endl;
+								}
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*projIT)) == true)
+								{
+									cout << "*** That Entity removed ***" << endl;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-		else if ((*colliderThis)->HasCollider())
+	}
+	else
+	{
+		colliderThisEnd = entityList.end();
+		for (colliderThis = entityList.begin(); colliderThis != colliderThisEnd; ++colliderThis)
 		{
-			// This object was derived from a CCollider class, then it will have Collision Detection methods
-			//CCollider *thisCollider = dynamic_cast<CCollider*>(*colliderThis);
-			EntityBase *thisEntity = dynamic_cast<EntityBase*>(*colliderThis);
-
-			// Check for collision with another collider class
-			colliderThatEnd = entityList.end();
-			for (colliderThat = entityList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
+			// Check if this entity is a CLaser type
+			if ((*colliderThis)->GetIsLaser())
 			{
+				// Dynamic cast it to a CLaser class
+				CLaser* thisEntity = dynamic_cast<CLaser*>(*colliderThis);
 
-				if (colliderThat == colliderThis)
-					continue;
-				counter++;
-				if ((*colliderThat)->HasCollider())
+				// Check for collision with another collider class
+				colliderThatEnd = entityList.end();
+				for (colliderThat = entityList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
 				{
-					EntityBase *thatEntity = dynamic_cast<EntityBase*>(*colliderThat);
-					if (CheckSphereCollision(thisEntity, thatEntity))
+					if (colliderThat == colliderThis)
+						continue;
+
+					if ((*colliderThat)->HasCollider())
 					{
-						if (CheckAABBCollision(thisEntity, thatEntity))
+						Vector3 hitPosition = Vector3(0, 0, 0);
 
+						// Get the minAABB and maxAABB for (*colliderThat)
+						CCollider *thatCollider = dynamic_cast<CCollider*>(*colliderThat);
+						Vector3 thatMinAABB = (*colliderThat)->GetPosition() + thatCollider->GetMinAABB();
+						Vector3 thatMaxAABB = (*colliderThat)->GetPosition() + thatCollider->GetMaxAABB();
+
+						if (CheckLineSegmentPlane(thisEntity->GetPosition(),
+							thisEntity->GetPosition() - thisEntity->GetDirection() * thisEntity->GetLength(),
+							thatMinAABB, thatMaxAABB,
+							hitPosition) == true)
 						{
-							cout << "HERE";
-							thisEntity->SetIsDone(true);
-							thatEntity->SetIsDone(true);
+							(*colliderThis)->SetIsDone(true);
+							(*colliderThat)->SetIsDone(true);
 
-							CSceneGraph::GetInstance()->DeleteNode((*colliderThis));
-							CSceneGraph::GetInstance()->DeleteNode((*colliderThat));
 
 							// Remove from Scene Graph
 							if (CSceneGraph::GetInstance()->DeleteNode((*colliderThis)) == true)
@@ -427,13 +530,57 @@ bool EntityManager::CheckForCollision(void)
 							{
 								cout << "*** That Entity removed ***" << endl;
 							}
-						}
 
+						}
+					}
+				}
+			}
+			else if ((*colliderThis)->HasCollider())
+			{
+				// This object was derived from a CCollider class, then it will have Collision Detection methods
+				//CCollider *thisCollider = dynamic_cast<CCollider*>(*colliderThis);
+				EntityBase *thisEntity = dynamic_cast<EntityBase*>(*colliderThis);
+
+				// Check for collision with another collider class
+				colliderThatEnd = entityList.end();
+				for (colliderThat = entityList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
+				{
+
+					if (colliderThat == colliderThis)
+						continue;
+					if ((*colliderThat)->HasCollider())
+					{
+						EntityBase *thatEntity = dynamic_cast<EntityBase*>(*colliderThat);
+						if (CheckSphereCollision(thisEntity, thatEntity))
+						{
+							if (CheckAABBCollision(thisEntity, thatEntity))
+
+							{
+								cout << "HERE";
+								thisEntity->SetIsDone(true);
+								thatEntity->SetIsDone(true);
+
+								CSceneGraph::GetInstance()->DeleteNode((*colliderThis));
+								CSceneGraph::GetInstance()->DeleteNode((*colliderThat));
+
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*colliderThis)) == true)
+								{
+									cout << "*** This Entity removed ***" << endl;
+								}
+								// Remove from Scene Graph
+								if (CSceneGraph::GetInstance()->DeleteNode((*colliderThat)) == true)
+								{
+									cout << "*** That Entity removed ***" << endl;
+								}
+							}
+
+						}
 					}
 				}
 			}
 		}
 	}
-	cout << "counter: " << counter << endl;
+
 	return false;
 }

@@ -19,6 +19,9 @@ public:
 	void AddEntity(EntityBase* _newEntity, bool b_AddToSpatialPartition = false);
 	bool RemoveEntity(EntityBase* _existingEntity);
 
+	void AddProjectile(EntityBase* _newEntity, bool b_AddToSpatialPartition = false);
+	bool RemoveProjectile(EntityBase* _existingEntity);
+
 	bool MarkForDeletion(EntityBase* _existingEntity);
 
 	void SetSpatialPartition(CSpatialPartition * theSpatialPartition);
@@ -45,6 +48,7 @@ private:
 	bool CheckForCollision(void);
 
 	std::list<EntityBase*> entityList;
+	std::list<EntityBase*> projectileList;
 
 	//Handler to SpatialPartition
 	CSpatialPartition* theSpatialPartition;
