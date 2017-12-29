@@ -266,11 +266,10 @@ void SceneText::Init()
 											 "SKYBOX_LEFT", "SKYBOX_RIGHT",
 											 "SKYBOX_TOP", "SKYBOX_BOTTOM");
 
-	thebox = Create::Entity("Box", Vector3(20.0f, -10.0f, -20.0f), Vector3(3, 3, 3));
+	thebox = Create::Entity("Box", Vector3(20.0f, -5.f, -20.0f), Vector3(3, 3, 3));
 	thebox->SetCollider(true);
-	//thebox->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
-	 thebox->SetPAABB(Vector3(10, 100, 10), thebox->GetPosition());
-	things.push_back(thebox);
+	thebox->SetAABB(Vector3(3.5f, 3.5f, 3.5f), Vector3(-0.5f, -0.5f, -0.5f));
+	
 
 
 
@@ -304,6 +303,8 @@ void SceneText::Init()
 	RenderMeshOnScreen(MeshBuilder::GetInstance()->GetMesh("crosshair"), 40, 30, 5, 5);
 
 	destroyed = true;
+	destroyed2 = true;
+	timer2 = 0;
 }
 void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int sizey)
 {
@@ -331,12 +332,13 @@ void SceneText::RenderMeshOnScreen(Mesh* mesh, int x, int y, int sizex, int size
 
 void SceneText::Update(double dt)
 {
+	if(playerInfo->SetPos)
 	cout << timer;
 	if (Boxie->IsDone())
 	{
 		if (destroyed)
 		{
-			score = score + 1;
+			 
 			Boom = Create::Entity("boom", Vector3(-30.f, -5.f, -20.0f));
 			destroyed = false;
 		}
@@ -346,6 +348,7 @@ void SceneText::Update(double dt)
 			if (timer > 0.5)
 			{
 				Boom->SetIsDone(true);
+				score = score + 1;
 				timer = 0;
 			}
 		}
@@ -358,20 +361,21 @@ void SceneText::Update(double dt)
 	 
 	if (head->IsDone())
 	{
-		if (destroyed)
+		if (destroyed2)
 		{
 			score = score + 1;
 			Boom = Create::Entity("boom", Vector3(-20.f, -0.f, -20.0f));
-			destroyed = false;
+			destroyed2 = false;
 			score + 1;
 		}
 		if (!Boom->IsDone())
 		{
-			timer += dt;
-			if (timer > 0.5)
+			timer2 += dt;
+			if (timer2 > 0.5)
 			{
+
 				Boom->SetIsDone(true);
-				timer = 0;
+				timer2 = 0;
 			}
 		}
 	}

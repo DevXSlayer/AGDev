@@ -331,7 +331,6 @@ bool EntityManager::CheckForCollision(void)
 		{
 			// Dynamic cast it to a CLaser class
 			CLaser* thisEntity = dynamic_cast<CLaser*>(*colliderThis);
-
 			// Check for collision with another collider class
 			colliderThatEnd = entityList.end();
 			int counter = 0;

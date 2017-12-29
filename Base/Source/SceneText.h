@@ -48,6 +48,8 @@ private:
 	float timer;
 	float score;
 	bool destroyed;
+	bool destroyed2;
+	float timer2;
 	std::list<GenericEntity*> things;
 	std::list<GenericEntity*> boomboom;
 };
