@@ -413,7 +413,8 @@ bool EntityManager::CheckForCollision(void)
 		{
 			if ((*projIT)->GetIsLaser())
 			{
-				EntityBase *projEntity = dynamic_cast<EntityBase*>(*projIT);
+			EntityBase *projEntity = dynamic_cast<EntityBase*>(*projIT);
+			//CLaser* thisEntity = dynamic_cast<EntityBase*>(*colliderThis);
 
 				for (std::list<EntityBase*>::iterator entityIT = entityList.begin(); entityIT != entityList.end(); entityIT++)
 				{

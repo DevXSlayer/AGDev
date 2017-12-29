@@ -1,6 +1,4 @@
-﻿  GenericEntity.cpp
-c:\users\devxslayer\documents\agdev2\base\source\genericentity.cpp(47): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\devxslayer\documents\agdev2\base\source\genericentity.cpp(48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿  EntityManager.cpp
 Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Base.vcxproj -> C:\Users\DevXSlayer\Documents\AGDev2\Debug\Base.exe
